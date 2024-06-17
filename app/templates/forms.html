@@ -1,0 +1,73 @@
+<script src="{{ url_for('static', filename='forms.js') }}"></script>
+<script src="https://kit.fontawesome.com/e2c889255e.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+
+<button class="swap">
+    <button class="L" type="button" id="link" data-text="Sign In">Sign In</button>
+    <button class="S" type="button" id="link" data-text="SignUp">SignUp</button>
+</button>
+
+<div class="popup-overlay">
+    <div class="popup">
+        <button class="close-btn">&times;</button>
+        <!-- Login Form -->
+        <div class="login-form">
+            <h2 id="login-heading" class="text-xl font-bold text-center mb-4">Login to everlasting technology <i class="fa-brands fa-btc"></i></h2>
+            <form id="signin-form" method="POST" action="{{ url_for('auth.signin') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-element mb-4">
+                    <fieldset id="login-email-field" class="text-sm">
+                        {{ form.email.label }}
+                        {{ form.email(class='form-control w-full p-2 rounded-md', placeholder='Enter your email address') }}
+                    </fieldset>
+                    <span class="underline block h-1 bg-black"></span>
+                </div>
+                <div class="form-element mb-4">
+                    <fieldset id="login-pass-field" class="text-sm">
+                        {{ form.password.label }}
+                        {{ form.password(class='form-control w-full p-2 rounded-md', placeholder='Enter your password') }}
+                        <span class="underline block h-1 bg-black"></span>
+                    </fieldset>
+                </div>
+                <div class="form-element mb-4 flex items-center">
+                    <input type="checkbox" id="remember-me" class="mr-2">
+                    <label for="remember-me">Remember me</label>
+                </div>
+                <div class="form-element">
+                    <button class="submit" type="submit" id="link" data-text="Sign In">Sign In</button>
+                </div>
+                <div class="form-element text-center">
+                    <a href="#" class="FP">Forgot password?</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="signup-form form-wrapper" style="display: none;">
+            <h2 id="signup-heading" class="text-xl font-bold text-center mb-4">IT'S FREE99! Learn about the everlasting blockchain <i class="fa-brands fa-btc"></i></h2>
+            <form id="signup-form" method="POST" action="{{ url_for('auth.signup') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-element mb-4">
+                    <fieldset id="signup-email-field" class="text-sm">
+                        {{ form.email.label }} (Required)
+                        {{ form.email(class='form-control w-full p-2 rounded-md', placeholder='Enter your email address') }}
+                    </fieldset>
+                    <span class="underline block h-1 bg-black"></span>
+                </div>
+                <div class="form-element mb-4">
+                    <fieldset id="sign-up-pass-field" class="text-sm">
+                        {{ form.password.label }}
+                        {{ form.password(class='form-control w-full p-2 rounded-md', placeholder='Enter your password') }}
+                        <span class="underline block h-1 bg-black"></span>
+                    </fieldset>
+                </div>
+                <div class="form-element">
+                    <button class="submit" type="submit" id="link" data-text="SignUp">Sign Up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

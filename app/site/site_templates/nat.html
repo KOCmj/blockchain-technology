@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script type="module" src="{{ url_for('static', filename='NAT.js')}}" defer></script>
+<script src="{{ url_for('static', filename='forms.js') }}" defer></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')}}">
+
+<section class="mx-auto pt-[10rem] flex flex-col justify-center items-center">
+  <main class="mx-auto px-4 items-start text-slate-300 font-sans">
+
+    <h1 class="font-bold text-lg">What is a NAT?</h1>
+    <p class="pt-2">A NAT (Non-Arbitrary Token) is a framework/application of Digital Matter Theory (DMT) 
+        that leverages the infrastructure of Bitcoin to generate unique digital assets/ownership. 
+        NAT's uses the data patterns of Bitcoin to create tokens which then can be turned into art/games etc.
+    </p>
+
+    <h2 class="font-bold text-lg pt-4">Digital Matter Theory (DMT)</h2>
+    <p class="pt-2">DMT presents the creation of digital substance from patterns in data. One example of DMT is bitmap. 
+        Bitmap identifies every block from bitcoin to generate digital land in the metaverse.
+    </p>
+
+    <h2 class="font-bold text-lg pt-4">Why this card?</h2>
+    <p class="pt-2">This card provides digital ownership that signifies you are a student of Coding Temple.
+        There will be a total of 20,000 cards, each costing $200 or 0.003 BTC. When students graduate, they can 
+        sell their membership card to onboard new students.
+    </p>
+
+    <h2 class="font-bold text-lg pt-4">Deployment</h2>
+    <p class="pt-2">Deployment takes place on Mscribe, the marketplace founded by the
+        creators of NAT's. Deployment guild is in the gitbook. 
+    </p>
+    <p class="pt-2">Visit the <a href="https://mscribe.io" class="text-cyan-400 underline hover:text-cyan-700 hover:no-underline">Mscribe website</a> to explore the marketplace, discover existing NATs.
+
+
+    <h2 class="font-bold text-lg pt-4">Source</h2>
+    <p class="pt-2">For more information about Digital Matter Theory and Non-Arbitrary Tokens, 
+        please refer to the <a href="https://digital-matter-theory.gitbook.io/digital-matter-theory" 
+        class="text-cyan-400 underline hover:text-cyan-700 hover:no-underline"
+    >
+        Digital Matter Theory GitBook
+    </a>.</p>
+  </main>
+
+
+  <div class="mt-16">
+    <div id="card-container" style="width: 400px; height: 550px; border: 1px solid #000000; border-radius: 20px; position: relative;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <rect x="0" y="0" width="400" height="550" fill="url(#card-gradient)" rx="20"/>
+            <text x="50%" y="15%" text-anchor="middle" font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" font-size="36px" font-weight="bold" fill="#000" text-shadow="2px 2px 4px rgba(0, 0, 0, 0.5)">Coding Temple</text>
+            <line x1="0" y1="35%" x2="100%" y2="35%" stroke="#000" stroke-width="2" />
+            <text x="50%" y="90%" text-anchor="middle" font-size="18px" font-weight="bold" fill="#000">Student</text>
+            <line x1="0" y1="85%" x2="100%" y2="85%" stroke="#000" stroke-width="2" />
+            <text x="50%" y="70%" text-anchor="middle" font-size="10px" font-weight="bold" fill="#000">ID Number:</text>
+            <rect x="10%" y="72%" width="80%" height="50" rx="25" stroke="#000" stroke-width="2" fill="none" />
+            <text id="id-number" x="50%" y="77%" text-anchor="middle" font-size="10px" fill="#000"></text>
+              
+            <linearGradient id="card-gradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1abc9c" />
+                <stop offset="50%" stop-color="#d7ffd9" />
+                <stop offset="100%" stop-color="#1abc9c" />
+            </linearGradient>
+        </svg>
+
+          
+        <div id="svg-container" style="width: 100%; height: 100%; position: absolute; top: 0%; left: 50%; transform: translateX(-50%);">
+          <img src="{{ url_for('static', filename='svg/NAT.svg') }}" alt="NAT" id="svg-image" style="position: absolute; top: 24%; left: 50%; transform: translateX(-50%);">
+          <div id="generated-svg-container" style="position: absolute; top: 0%; left: 50%; transform: translateX(-50%); width: 100%; height: 100%;"></div>
+          <div id="traits-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;"></div>
+        </div>
+      </div>
+
+
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;">
+        <defs>
+          <pattern id="binary-sequence-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <rect x="0" y="0" width="20" height="20" fill="transparent" />
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width="400" height="550" fill="url(#binary-sequence-pattern)" />
+        <g id="binary-sequence-background"></g>
+      </svg>
+      
+  </div>
+  
+  <div>
+      <button id="mint-card-button" class="bg-slate-300 hover:bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857] text-slate-700 hover:text-black border rounded-lg px-4 py-8" style="z-index: 9999;">Mint New Card</button>
+  </div>
+</section>
+
+
+{% endblock %} 

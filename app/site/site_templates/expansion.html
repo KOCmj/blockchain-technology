@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<script src="{{ url_for('static', filename='forms.js') }}" defer></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')}}">
+
+<section class="pt-[10rem] text-slate-300">
+    <div class="container mx-auto px-4">
+
+        <h2 class="font-bold text-lg text-center">Hybrid</h2>
+        <p class="pt-2">The integration of blockchain into education is inevitable. 
+            As an early adopter, our school can be a leader in shaping the future of learning. 
+            We propose a hybrid approach that combines the best of web2 and web3 experiences, 
+            allowing us to explore the blockchain and metaverse technologies while maintaining our traditional strengths. 
+            This positions us to create more access, agency, and opportunity for our students in a blockchain-powered world.
+        </p>
+
+        <main class="pt-[10rem]">
+            <h2 class="text-3xl text-slate-300 font-bold mb-4 text-center">Expansion Ideas</h2>
+            <div class="w-7/12 bg-black">
+                <img src="{{ url_for('static', filename='svg/ideas.svg')}}" alt="">
+            </div>
+        </main>
+
+        <h2 class="font-bold text-lg mt-10 text-center">Benefits</h2>
+        <ul class="benefits-list">
+            <li>
+                Reduced cost for students, making education more accessible and affordable
+            </li>
+
+            <li>
+                Increased revenue for Coding Temple
+            </li>
+
+            <li>
+                More connection to students and staff, fostering a community
+            </li>
+
+            <li>
+                Exposure to cutting-edge blockchain technology, preparing students for the future of digital assets and ownership
+            </li>
+
+            <li>
+                Increased brand awareness and recognition for Coding Temple as an innovative educational institution
+            </li>
+    
+            <li>
+                Partnerships and collaborations with blockchain-based projects and companies
+            </li>
+
+            <li>
+                Increased student engagement and motivation through the ownership and trading of unique digital assets
+            </li>
+
+            <li>
+                Opportunities for students to learn about digital asset management, trading, and investing as part of their education
+            </li>
+        </ul>
+    </div>
+</section>
+
+{% endblock %}

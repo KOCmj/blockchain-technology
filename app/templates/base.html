@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/e2c889255e.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <script src="{{ url_for('static', filename='base.js') }}" defer type="module"></script>
+  <script src="{{ url_for('static', filename='forms.js') }}" defer></script>
+  <title>Blockchain Technology</title>
+  <style>
+    nav {
+        z-index: 10000;
+    }
+  </style>
+
+</head>
+<body class="bg-black">
+  <nav class="bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857] shadow-2xl fixed w-full top-0 z-[10000]">
+    <div class="navbar-content mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
+        <div class="flex-shrink-0 flex items-center">
+            <a href="{{ url_for('site.home') }}" class="flex items-center">
+              <img 
+                id="logo" 
+                class="rounded-md" 
+                src="{{ url_for('static', filename='images/logo.png') }}" 
+                alt="Company Logo" 
+                style="filter: hue-rotate(174deg) brightness(170%) saturate(200%);"
+            >
+              <span class="text-black ml-3 font-bold">Blockchain Technology</span>
+            </a>
+        </div>
+        <div class="flex space-x-8">
+            <a href="{{ url_for('site.home') }}" class="px-4 py-2 rounded-lg" id="link" data-text="Dashboard">Dashboard</a>
+            <a href="{{ url_for('site.redesign') }}" class="px-4 py-2 rounded-lg" id="link" data-text="Redesign">Redesign</a>
+            <a href="{{ url_for('site.nat') }}" class="px-4 py-2 rounded-lg" id="link" data-text="NAT">NAT</a>
+            <a href="{{ url_for('site.learn')}}" class="px-4 py-2 rounded lg" id="link" data-text="Web3">Web3</a>
+            <a href="{{ url_for('site.expand')}}" class="px-4 py-2 rounded lg" id="link" data-text="Expansion">Expansion</a>
+        </div>
+
+
+        <div class="popup-container" id="popup-container">
+            {% with form=form %}
+                {% include 'forms.html' %}
+            {% endwith %}
+        </div>
+
+        
+        <div class="relative ml-3 z-[10000]" id="loginSignupButtons">
+            <button type="button" class="relative flex rounded-full bg-gray-800 text-black text-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 focus:ring-offset-gray-800 hover:text-slate-300" id="user-menu-button" aria-expanded="false" aria-haspopup="true" data-text="">
+                <span class="absolute -inset-1.5"></span>
+                <span class="sr-only">Open user menu</span>
+                <i class="fa-solid fa-user"></i>
+            </button>
+
+            <div class="user-menu hidden absolute right-0 z-[10000] mt-2 w-96 origin-top-right rounded-lg bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857] py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" style= "width: 10rem;">
+                <button class="close-menu cursor-pointer w-[24px] h-[24px]">
+                    <i class="fa-regular fa-circle-xmark"></i>
+                </button>
+                <ul>
+                    {% if current_user.is_authenticated %}
+                    <li>
+                        <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="user-menu-item">Logout</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a href="#" class="LO block px-4 py-2 text-sm show-login" role="menuitem" tabindex="-1" id="show-login">Sign In</a>
+                    </li>
+                    <li>
+                        <a href="#" class="SU block px-4 py-2 text-sm show-signup" role="menuitem" tabindex="-1" id="show-signup">Create Account</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+  </nav>
+  {% block content %}
+  {% endblock %}
+</body>
+</html>

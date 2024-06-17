@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+<script src="{{ url_for('static', filename='main.js') }}" defer></script>
+
+<body>
+  <nav class="relative bg-black flex items-center py-4 px-6 pt-28 z-[9999]">
+    <div class="flex-1 flex items-center">
+      <img src="{{ url_for('static', filename='svg/logo.svg') }}" alt="logo" class="max-w-14 h-auto">
+    </div>
+    <div class="flex-1 flex justify-center space-x-8 text-white">
+      <span class="cursor-default">ALL COURSES</span>
+      <span class="cursor-default">ABOUT US</span>
+    </div>
+    <button id="connectBtn" class="relative bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857] text-black py-2 px-4 mt-4 hover:bg-gradient-to-r hover:from-transparent hover:via-transparent hover:to-black hover:text-white border-2 border-gradient-to-r border-from-[#FDFF9B] border-via-[#50FBD9] border-to-[#106857]">CONNECT -></button>
+    <div class="flex-1"></div>
+    <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857]"></div>
+  </nav>
+
+  <section class="flex mt-40">
+    <div></div>
+    <main class="flex flex-col items-start font-sans text-white mt-16 pl-[15%] w-1/2 mr-10">
+      <h1 class="text-[40px] font-bold lh-10">Career-focused learning paths</h1>
+      <p class="text-[20px] pt-10">Change your life in months, not years with Coding Temple's flexible learning experience!</p>
+      <button id="edit" class="relative bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857] text-black py-2 px-4 mt-4 hover:bg-gradient-to-r hover:from-transparent hover:via-transparent hover:to-black hover:text-white border-2 border-gradient-to-r border-from-[#FDFF9B] border-via-[#50FBD9] border-to-[#106857]">DISCOVER MORE</button>
+    </main>
+    <div class="flex justify-end w-1/2">
+      <img src="{{ url_for('static', filename='svg/gc.svg') }}" alt="logo" class="w-full max-w-md">
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div class="modal wallet-modal fixed flex inset-0 hidden items-center justify-center bg-black bg-opacity-50" style="z-index: 10001;">
+    <div class="bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857] p-6 rounded-lg">
+      <div class="flex justify-between w-full items-center">
+        <div class="font-sans text-[23px] leading-[32px] font-[500] uppercase">Connect wallet</div>
+        <button class="close-modal cursor-pointer w-[24px] h-[24px]">
+          <i class="fa-regular fa-circle-xmark"></i>
+        </button>
+      </div>
+      <div class="w-full space-y-[15px] mt-[45px]">
+        <button class="connect-wallet space-x-[45px]" data-wallet="unisat">
+          <img alt="unisat-wallet" src="{{ url_for('static', filename='svg/unisat.svg') }}" width="24px">
+          Unisat Wallet
+        </button>
+        <div class="font-sans text-[13px] leading-[20px] font-[500] flex justify-between">
+          <div class="text-slate-600">Don't have a Unisat wallet yet?
+            <a class="text-black hover:text-slate-300 underline" href="https://unisat.io/download">Download</a>
+          </div>
+        </div>
+      </div>
+      <div class="w-full space-y-[15px] mt-[45px]">
+        <button class="connect-wallet space-x-[45px]" data-wallet="xverse">
+          <img alt="xverse-wallet" src="{{ url_for('static', filename='svg/xverse.svg') }}" width="24px">
+          Xverse Wallet
+        </button>
+        <div class="font-sans text-[13px] leading-[20px] font-[500] flex justify-between">
+          <div class="text-slate-600">Don't have a Xverse wallet yet?
+            <a class="text-black hover:text-slate-300 underline" href="https://www.xverse.app/download">Download</a>
+          </div>
+        </div>
+      </div>
+      <div class="w-full space-y-[15px] mt-[45px]">
+        <button class="connect-wallet space-x-[45px]" data-wallet="leather">
+          <div>
+            <img alt='leather-wallet' src="{{ url_for('static', filename='svg/leather.svg') }}">
+          </div>
+          Leather Wallet
+        </button>
+        <div class="font-sans text-[13px] leading-[20px] font-[500] flex justify-between">
+          <div class="text-slate-600">Don't have a Leather wallet yet?
+            <a class="text-black hover:text-slate-300 underline" href="https://leather.io/install-extension">Download</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="bg-gradient-to-r from-slate-400 via-teal-300 to-slate-300 font-sans py-10 relative">
+    <div class="flex items-center justify-center">
+      <div class="justify-start flex mr-8">
+        <img src="{{ url_for('static', filename='svg/design.svg')}}" alt="Design SVG" class="w-80 h-80 opacity-50">
+      </div>
+      <div class="mx-8 text-center">
+        <h1 class="font-bold text-[36px]">Explore Courses</h1>
+        <p class="pt-11 text-[18px] font-normal tracking-[0.02em]">
+          Our comprehensive curriculum is designed to provide you with the knowledge and skills needed to become a professional Data Analyst
+        </p>
+      </div>
+    </div>
+  
+    <div class="wrapper mx-auto max-w-6xl">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Course 1 -->
+        <div class="relative">
+          <img src="{{ url_for('static', filename='svg/SE.svg') }}" alt="Software Engineering Logo" class="w-full h-96">
+          <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
+            <h3 class="text-2xl font-bold">Software Engineering</h3>
+            <div class="bg-black bg-opacity-70 mt-2 py-1 px-2 rounded">$9,500</div>
+            <a class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" role="link" href="#" rel="bookmark">Enroll Now</a>
+            <button class="payWithCryptoBtn bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4 flex flex-col items-center">
+              <span class="font-bold">Get A Membership Card</span>
+              <span class="text-sm mt-1">0.003 BTC</span>            
+            </button>
+          </div>
+        </div>
+
+        <!-- Course 2 -->
+        <div class="relative">
+          <img src="{{ url_for('static', filename='svg/DA.svg') }}" alt="Data Analytics Logo" class="w-full h-96">
+          <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
+            <h3 class="text-2xl font-bold">Data Analytics</h3>
+            <div class="bg-black bg-opacity-70 mt-2 py-1 px-2 rounded">$9,500</div>
+            <a class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" role="link" href="#" rel="bookmark">Enroll Now</a>
+            <button class="payWithCryptoBtn bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4 flex flex-col items-center">
+              <span class="font-bold">Get A Membership Card</span>
+              <span class="text-sm mt-1">0.003 BTC</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Course 3 -->
+        <div class="relative">
+          <img src="{{ url_for('static', filename='svg/QA.svg') }}" alt="Quality Assurance Logo" class="w-full h-96">
+          <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
+            <h3 class="text-2xl font-bold">Quality Assurance</h3>
+            <div class="bg-black bg-opacity-70 mt-2 py-1 px-2 rounded">$9,500</div>
+            <a class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" role="link" href="#" rel="bookmark">Enroll Now</a>
+            <button class="payWithCryptoBtn bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4 flex flex-col items-center">
+              <span class="font-bold">Get A Membership Card</span>
+              <span class="text-sm mt-1">0.003 BTC</span>            
+            </button>
+          </div>
+        </div>
+
+        <!-- Course 4 -->
+        <div class="relative">
+          <img src="{{ url_for('static', filename='svg/CS.svg') }}" alt="Cyber Security Logo" class="w-full h-96">
+          <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
+            <h3 class="text-2xl font-bold">Cyber Security</h3>
+            <div class="bg-black bg-opacity-70 mt-2 py-1 px-2 rounded">$9,500</div>
+            <a class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" role="link" href="#" rel="bookmark">Enroll Now</a>
+            <button class="payWithCryptoBtn bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4 flex flex-col items-center">
+              <span class="font-bold">Get A Membership Card</span>
+              <span class="text-sm mt-1">0.003 BTC</span>            
+            </button>
+          </div>
+        </div>
+        
+        <!-- Course 5 -->
+        <div class="relative">
+          <img src="{{ url_for('static', filename='svg/ME.svg') }}" alt="Blockchain Development Logo" class="w-full h-96 ">
+          <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
+            <h3 class="text-2xl font-bold">Blockchain Development</h3>
+            <div class="bg-black bg-opacity-70 mt-2 py-1 px-2 rounded">$9,500</div>
+            <a class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" role="link" href="#" rel="bookmark">Enroll Now</a>
+            <button class="payWithCryptoBtn bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-700 mt-4 flex flex-col items-center">
+              <span class="font-bold">Get A Membership Card</span>
+              <span class="text-sm mt-1">0.003 BTC</span>            
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="flex justify-end bottom-0 right-0 mr-8 mb-8">
+      <img src="{{ url_for('static', filename='svg/design.svg') }}" alt="Design SVG" class="w-80 h-80 rotate-180 opacity-50">
+    </div>
+  </section>
+  
+</body>
+</html>
+
+{% endblock %}
