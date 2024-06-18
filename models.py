@@ -50,3 +50,10 @@ class User(UserMixin):
                 return User(user_data['id'], user_data['email'], user_data.get('wallet_address'))
     
         return None
+    
+    def delete(user_id):
+        response = supabase.table('users').delete().eq('id', user_id).execute()
+        if response.data:
+            return True
+        else:
+            return False
