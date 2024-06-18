@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Function to broadcast transaction/inscription
   async function broadcastTransaction(signedMessage) {
     try {
-      const response = await fetch('/broadcast-transaction', {
+      const response = await fetch('/api/broadcast-transaction', {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
