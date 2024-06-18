@@ -5,4 +5,5 @@ from wtforms.validators import DataRequired, Email, Length
 class UserLoginForm(FlaskForm):
     email = StringField('Email', validators = [DataRequired(), Email()])
     password = PasswordField('Password', validators = [DataRequired(), Length(min=6)])
+    wallet_address = StringField('Wallet Address')
     submit_button = SubmitField()

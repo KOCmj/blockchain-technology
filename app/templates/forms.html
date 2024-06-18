@@ -64,6 +64,13 @@
                         <span class="underline block h-1 bg-black"></span>
                     </fieldset>
                 </div>
+                <div class="form-element mb-4">
+                    <fieldset id="signup-wallet-address-field" class="text-sm">
+                      {{ form.wallet_address.label }}
+                      {{ form.wallet_address(class='form-control w-full p-2 rounded-md', placeholder='Enter your wallet address') }}
+                      <span class="underline block h-1 bg-black"></span>
+                    </fieldset>
+                  </div>
                 <div class="form-element">
                     <button class="submit" type="submit" id="link" data-text="SignUp">Sign Up</button>
                 </div>

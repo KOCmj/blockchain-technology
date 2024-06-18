@@ -2,10 +2,54 @@ from flask import Blueprint, request, jsonify
 import requests
 from dotenv import load_dotenv
 import os
+from models import User
+
+
 
 load_dotenv()
 
 api = Blueprint('api', __name__)
+
+@api.route('/users', methods=['POST'])
+def create_user():
+    email = request.json.get('email')
+    password = request.json.get('password')
+    wallet_address = request.json.get('walletAddress')
+
+    user = User.create(email, password, wallet_address)
+    if user:
+        return jsonify({'success': True, 'user_id': user.id})
+    else:
+        return jsonify({'success': False, 'error': 'Failed to create user'}), 400
+
+@api.route('/users/<user_id>', methods=['GET'])
+def get_user(user_id):
+    user = User.get(user_id)
+    if user:
+        return jsonify({'success': True, 'email': user.email})
+    else:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
+
+@api.route('/users/<user_id>', methods=['PUT'])
+def update_user(user_id):
+    email = request.json.get('email')
+    password = request.json.get('password')
+    wallet_address = request.json.get('walletAddress') 
+
+    user = User.update(user_id, email, password, wallet_address)
+    if user:
+        return jsonify({'success': True, 'user_id': user.id})
+    else:
+        return jsonify({'success': False, 'error': 'Failed to update user'}), 400
+
+@api.route('/users/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    success = User.delete(user_id)
+    if success:
+        return jsonify({'success': True})
+    else:
+        return jsonify({'success': False, 'error': 'Failed to delete user'}), 400
+    
 
 @api.route('/broadcast-transaction', methods=['POST'])
 def broadcast_transaction():

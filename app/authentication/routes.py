@@ -12,8 +12,9 @@ def signup():
     if request.method == 'POST' and form.validate_on_submit():
         email = form.email.data
         password = form.password.data
+        wallet_address = form.wallet_address.data
 
-        user = User.create(email, password)
+        user = User.create(email, password, wallet_address=wallet_address)
         if user:
             login_user(user)
             flash('You have successfully created a user account', 'User-created')
