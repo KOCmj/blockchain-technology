@@ -857,6 +857,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let pythonLogoDisplayed = false;
         let btcLaptopDisplayed = false;
         let bookDisplayDisplayed = false;
+        let solidityDisplayed = false
+        let reactDisplayed = false
 
         // Color Map for traits
         const traitsColorMap = {
@@ -1080,9 +1082,41 @@ document.addEventListener('DOMContentLoaded', () => {
             traitsContainer.appendChild(pythonContainer);
             pythonLogoDisplayed = true;
         }
+
+        //React trait
+        if (blockNumberStr.includes('1') && !solidityDisplayed) {
+            const reactContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            reactContainer.setAttribute('width', '22');
+            reactContainer.setAttribute('height', '19');
+            reactContainer.setAttribute('viewBox', '0 0 22 19');
+            reactContainer.setAttribute('fill', 'none');
+            reactContainer.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            reactContainer.style.position = 'absolute';
+            reactContainer.style.top = '33.8%';
+            reactContainer.style.right = '56%';
+            reactContainer.style.transform = 'translateX(-50%)';
+    
+            const traitsColorDigit = blockNumberDigits[5];
+            const traitsColor = traitsColorMap[traitsColorDigit] || traitsColorMap["default"];
+            reactContainer.style.filter = `${traitsColor} saturate(1)`;
+
+            const svgContent = `
+                <svg width="22" height="19" viewBox="0 0 22 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="11" cy="10" r="2" fill="#2A95EB"/>
+                    <path d="M10.2883 5.80591C7.97318 5.89196 5.46651 6.32113 3.56701 7.09062C2.61648 7.47568 1.84259 7.93617 1.31852 8.46034C0.800495 8.97846 0.539843 9.54297 0.562947 10.1646C0.586151 10.7888 0.888741 11.3486 1.44483 11.849C2.00599 12.3541 2.81009 12.7828 3.78219 13.1235C5.7253 13.8044 8.24683 14.1013 10.5555 14.0154C12.8746 13.9292 15.5614 13.5279 17.6408 12.7828C18.6822 12.4096 19.5442 11.9597 20.1322 11.4414C20.7151 10.9277 21.0008 10.3751 20.9784 9.77255C20.9558 9.16437 20.6251 8.59922 19.9998 8.08055C19.372 7.55987 18.4778 7.11405 17.4154 6.75746C15.2925 6.04492 12.5936 5.72022 10.2883 5.80591Z" stroke="#2A95EB" stroke-width="0.8"/>
+                    <path d="M14.9334 11.7795C16.2104 9.84651 17.3197 7.55808 17.799 5.56547C18.0389 4.56835 18.1146 3.671 17.9932 2.9398C17.8732 2.21703 17.5657 1.6766 17.0467 1.33375C16.5255 0.989422 15.8942 0.90986 15.1636 1.07096C14.4263 1.23353 13.6098 1.63807 12.7671 2.23052C11.0828 3.41474 9.37434 5.29286 8.10094 7.22048C6.82175 9.15686 5.58498 11.5756 4.9812 13.7003C4.67882 14.7644 4.54328 15.7273 4.62266 16.5071C4.70133 17.28 4.98461 17.8339 5.48767 18.1662C5.99548 18.5017 6.6475 18.5616 7.43321 18.3547C8.22194 18.1471 9.10476 17.6792 10.0129 17.0226C11.8276 15.7105 13.6619 13.7044 14.9334 11.7795Z" stroke="#2A95EB" stroke-width="0.8"/>
+                    <path d="M14.6662 7.72048C15.9432 9.65349 17.0526 11.9419 17.5318 13.9345C17.7717 14.9317 17.8474 15.829 17.726 16.5602C17.606 17.283 17.2985 17.8234 16.7795 18.1663C16.2583 18.5106 15.627 18.5901 14.8964 18.429C14.1591 18.2665 13.3426 17.8619 12.5 17.2695C10.8156 16.0853 9.10716 14.2071 7.83375 12.2795C6.55457 10.3431 5.31779 7.92443 4.71402 5.79968C4.41164 4.73559 4.2761 3.77274 4.35547 2.99291C4.43414 2.22003 4.71743 1.66608 5.22049 1.33375C5.7283 0.998294 6.38032 0.938426 7.16602 1.14529C7.95476 1.35295 8.83757 1.82081 9.74573 2.47745C11.5604 3.78951 13.3947 5.79563 14.6662 7.72048Z" stroke="#2A95EB" stroke-width="0.8"/>
+                </svg>            
+            `;
+
+            reactContainer.innerHTML = svgContent;
+            traitsContainer.appendChild(reactContainer);
+            reactDisplayed = true
+
+        }
         
         // Solidity Trait chances of generating 70%
-        if (combinedValue % 10 < 7) {
+        if (combinedValue % 10 < 7 && !reactDisplayed) {
             const solidityContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             solidityContainer.setAttribute('width', '20');
             solidityContainer.setAttribute('height', '24');
@@ -1116,6 +1150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
             solidityContainer.innerHTML = svgContent;
             traitsContainer.appendChild(solidityContainer);
+            solidityDisplayed = true
         }
 
         // ColorList for monocle
@@ -1559,111 +1594,6 @@ document.addEventListener('DOMContentLoaded', () => {
           console.error('Error minting new card:', error);
         }
       }
-
-    // function mintNewCard() {
-    //     blockNumber = (blockNumber + 1) % 1000;
-    //     fetchBlockData()
-    //       .then(([blockHeight, txCount]) => {
-    //         console.log('Minting new card...');
-    //         console.log('Block height:', blockHeight);
-    //         console.log('Transaction count:', txCount);
-      
-    //         const blockNumberStr = blockNumber.toString();
-    //         const binarySequenceBackground = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    //         const generatedSVGContainer = document.getElementById('generated-svg-container');
-    //         const svgImageElement = document.getElementById('svg-image');
-      
-    //         const selectedSVG = displayLegendarySVG(blockNumberStr) || displayCC(blockNumberStr);
-    //         const svgContent = generateSVGContent();
-      
-    //         if (selectedSVG) {
-    //           svgImageElement.src = selectedSVG;
-    //           svgImageElement.style.visibility = 'visible';
-    //           svgImageElement.style.zIndex = '1';
-    //           generatedSVGContainer.style.visibility = 'hidden';
-    //         } else {
-    //           svgImageElement.src = 'static/svg/NAT.svg';
-    //           svgImageElement.style.visibility = 'hidden';
-    //           generatedSVGContainer.style.visibility = 'visible';
-    //           generatedSVGContainer.style.zIndex = '1';
-    //         }
-      
-    //         generatedSVGContainer.innerHTML = svgContent;
-      
-    //         const newSVGContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    //         newSVGContainer.setAttribute('viewBox', '0 0 400 550');
-    //         newSVGContainer.innerHTML = svgContent;
-      
-    //         const traitsContainer = document.getElementById('traits-container');
-    //         traitsContainer.appendChild(newSVGContainer);
-      
-    //         // Use requestAnimationFrame to modify the style after the element has been rendered
-    //         requestAnimationFrame(() => {
-    //           newSVGContainer.style.position = 'absolute';
-    //           newSVGContainer.style.top = '0';
-    //           newSVGContainer.style.left = '0';
-    //           newSVGContainer.style.width = '100%';
-    //           newSVGContainer.style.height = '100%';
-    //         });
-      
-    //         updateCardID();
-      
-    //         const cardContainer = document.getElementById('card-container');
-      
-    //         // Remove existing binary sequence background
-    //         const existingBinarySequenceBackground = document.getElementById('binary-sequence-background');
-    //         if (existingBinarySequenceBackground && existingBinarySequenceBackground.parentNode === cardContainer) {
-    //           cardContainer.removeChild(existingBinarySequenceBackground);
-    //         }
-      
-    //         binarySequenceBackground.setAttribute('id', 'binary-sequence-background');
-    //         binarySequenceBackground.setAttribute('viewBox', '0 0 400 550');
-    //         binarySequenceBackground.setAttribute('style', 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;');
-      
-    //         const binarySequencePattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
-    //         binarySequencePattern.setAttribute('id', 'binary-sequence-pattern');
-    //         binarySequencePattern.setAttribute('x', '0');
-    //         binarySequencePattern.setAttribute('y', '0');
-    //         binarySequencePattern.setAttribute('width', '400');
-    //         binarySequencePattern.setAttribute('height', '550');
-    //         binarySequencePattern.setAttribute('patternUnits', 'userSpaceOnUse');
-      
-    //         const binarySequenceRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    //         binarySequenceRect.setAttribute('x', '0');
-    //         binarySequenceRect.setAttribute('y', '0');
-    //         binarySequenceRect.setAttribute('width', '400');
-    //         binarySequenceRect.setAttribute('height', '550');
-    //         binarySequenceRect.setAttribute('fill', 'transparent');
-      
-    //         const binarySequenceDefs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    //         binarySequenceDefs.appendChild(binarySequencePattern);
-    //         binarySequencePattern.appendChild(binarySequenceRect);
-      
-    //         const binarySequenceBackgroundRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    //         binarySequenceBackgroundRect.setAttribute('x', '0');
-    //         binarySequenceBackgroundRect.setAttribute('y', '0');
-    //         binarySequenceBackgroundRect.setAttribute('width', '400');
-    //         binarySequenceBackgroundRect.setAttribute('height', '550');
-    //         binarySequenceBackgroundRect.setAttribute('fill', 'url(#binary-sequence-pattern)');
-      
-    //         binarySequenceBackground.appendChild(binarySequenceDefs);
-    //         binarySequenceBackground.appendChild(binarySequenceBackgroundRect);
-      
-    //         cardContainer.appendChild(binarySequenceBackground);
-      
-    //         // Check for specific block numbers to animate the binary sequence
-    //         if (blockNumber % 2 === 0 || blockNumberStr.includes('5')){
-    //           generateBinarySequence(binarySequenceBackground, blockNumberStr);
-    //           animateBinarySequence(binarySequenceBackground, blockNumberStr, colorMap3, colorMap4);
-    //         }
-      
-    //         updateCardBackground(selectedSVG);
-      
-    //         console.log('New card minted.');
-    //       })
-    //       .catch(error => console.error('Error fetching Bitcoin block data:', error));
-    //   }
-
 
     // Attach event listener for minting new card
     const mintCardButton = document.getElementById('mint-card-button');
