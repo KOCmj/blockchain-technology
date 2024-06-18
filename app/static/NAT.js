@@ -315,6 +315,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     #nose > svg > path:first-child {
                         fill: #000000;
                     }
+                    #laptop-path-1,
+                    #laptop-path-2,
+                    #laptop-path-3 {
+                        fill: ${specialCondition ? 'url(#gradient-gear-5-luffy)' : `url(#${activeGradient})`};
+                    }
                 </style>
             `);
         }
@@ -593,36 +598,47 @@ document.addEventListener('DOMContentLoaded', () => {
         `);
 
         // Laptop
+        const laptopDigit = blockNumberDigits[5];
+        const laptopColor = colorMap2[laptopDigit] || colorMap2["default"];
         svgs.push(`
-            <div class="laptop-part" style="position: absolute; top: 36.6%; right: 44.5%;";>
+            <div class="laptop-part" style="position: absolute; top: 36.6%; right: 44.5%;">
                 <svg width="45" height="28" viewBox="0 0 45 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M41.9776 20.7125H1.147V21.8625H41.9776V20.7125Z" fill="black" fill-opacity="0.3"/>
-                    <path d="M2.8722 0.393005H44.4696L43.1278 2.11821H0.284302L2.8722 0.393005Z" fill="black"/>
+                    <path d="M2.8722 0.392998H44.4696L43.1278 2.1182H0.284302L2.8722 0.392998Z" fill="black"/>
                     <path d="M35.8435 23.5879H8.23959V26.4633H35.8435V23.5879Z" fill="black"/>
-                    <path d="M22.5679 25.8882H34.5016V24.9297L28.5348 25.8882L22.0415 24.9297L22.5679 25.8882Z" fill="url(#paint0_linear_114_2)" fill-opacity="0.44"/>
-                    <path d="M12.6486 25.5116C12.6494 25.0882 11.8351 24.7434 10.8297 24.7415C9.8244 24.7395 9.0087 25.0812 9.0079 25.5045C9.0071 25.9279 9.82141 26.2727 10.8268 26.2746C11.8321 26.2766 12.6478 25.9349 12.6486 25.5116Z" fill="url(#paint1_linear_114_2)" fill-opacity="0.54"/>
-                    <path d="M-0.00320435 4.22681H43.2236L41.9776 20.7125H1.147L-0.00320435 4.22681Z" fill="black"/>
-                    <path d="M21.9457 15.1534C24.0101 15.1534 25.6837 14.0376 25.6837 12.6613C25.6837 11.285 24.0101 10.1693 21.9457 10.1693C19.8812 10.1693 18.2077 11.285 18.2077 12.6613C18.2077 14.0376 19.8812 15.1534 21.9457 15.1534Z" fill="url(#paint2_linear_114_2)" fill-opacity="0.54"/>
+                ${isGradient(laptopColor) ? `
+                    <path id="laptop-path-1" d="M22.5679 25.8882H34.5016V24.9297L28.5348 25.8882L22.0415 24.9297L22.5679 25.8882Z" fill="url(#${laptopColor})" fill-opacity="0.44"/>
+                ` : `
+                    <path id="laptop-path-1" d="M22.5679 25.8882H34.5016V24.9297L28.5348 25.8882L22.0415 24.9297L22.5679 25.8882Z" fill="${laptopColor}" fill-opacity="0.44"/>
+                `}
+                ${isGradient(laptopColor) ? `
+                    <path id="laptop-path-2" d="M12.6486 25.5116C12.6494 25.0882 11.8351 24.7434 10.8297 24.7415C9.8244 24.7395 9.0087 25.0812 9.0079 25.5045C9.0071 25.9279 9.82141 26.2727 10.8268 26.2746C11.8321 26.2766 12.6478 25.9349 12.6486 25.5116Z" fill="url(#${laptopColor})" fill-opacity="0.54"/>
+                ` : `
+                    <path id="laptop-path-2" d="M12.6486 25.5116C12.6494 25.0882 11.8351 24.7434 10.8297 24.7415C9.8244 24.7395 9.0087 25.0812 9.0079 25.5045C9.0071 25.9279 9.82141 26.2727 10.8268 26.2746C11.8321 26.2766 12.6478 25.9349 12.6486 25.5116Z" fill="${laptopColor}" fill-opacity="0.54"/>
+                `}
+                <path d="M-0.00320435 4.2268H43.2236L41.9776 20.7125H1.147L-0.00320435 4.2268Z" fill="black"/>
+                ${isGradient(laptopColor) ? `
+                    <path id="laptop-path-3" d="M21.9457 15.1534C24.0101 15.1534 25.6837 14.0376 25.6837 12.6613C25.6837 11.285 24.0101 10.1693 21.9457 10.1693C19.8812 10.1693 18.2077 11.285 18.2077 12.6613C18.2077 14.0376 19.8812 15.1534 21.9457 15.1534Z" fill="url(#${laptopColor})" fill-opacity="0.54"/>
+                ` : `
+                    <path id="laptop-path-3" d="M21.9457 15.1534C24.0101 15.1534 25.6837 14.0376 25.6837 12.6613C25.6837 11.285 24.0101 10.1693 21.9457 10.1693C19.8812 10.1693 18.2077 11.285 18.2077 12.6613C18.2077 14.0376 19.8812 15.1534 21.9457 15.1534Z" fill="${laptopColor}" fill-opacity="0.54"/>
+                `}
                     <g style="mix-blend-mode:multiply">
-                    <path d="M35.8435 26.4633H8.23959V27.6134H35.8435V26.4633Z" fill="black" fill-opacity="0.2"/>
+                        <path d="M35.8435 26.4633H8.23959V27.6134H35.8435V26.4633Z" fill="black" fill-opacity="0.2"/>
+                    </g>
+                    <g style="mix-blend-mode:multiply">
+                        <path d="M41.9776 20.7125H1.147V21.8626H41.9776V20.7125Z" fill="black" fill-opacity="0.3"/>
                     </g>
                     <defs>
-                        <linearGradient id="paint0_linear_114_2" x1="28.2716" y1="24.9297" x2="28.2716" y2="25.8882" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#00EEFF"/>
-                            <stop offset="1" stop-color="#015A77"/>
-                        </linearGradient>
-                        <linearGradient id="paint1_linear_114_2" x1="9.0079" y1="25.5005" x2="12.6486" y2="25.4884" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#00EEFF"/>
-                            <stop offset="1" stop-color="#016A88"/>
-                        </linearGradient>
-                        <linearGradient id="paint2_linear_114_2" x1="18.2077" y1="12.6613" x2="25.6837" y2="12.6613" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="white"/>
-                            <stop offset="1" stop-color="#00EEFF"/>
-                        </linearGradient>
+                        ${isGradient(laptopColor) ? `
+                            <linearGradient id="${laptopColor}" x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stop-color="${colorMap2[laptopDigit] || colorMap2["default"]}"/>
+                                <stop offset="100%" stop-color="${colorMap2[laptopDigit] || colorMap2["default"]}"/>
+                            </linearGradient>
+                        `: " "}
                     </defs>
+                    ${gradientDefinitions}
                 </svg>
             </div>
-        `)
+        `);
 
         // Face
         svgs.push(`
@@ -734,24 +750,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 `:`
                     <path d="M1.3575 1.76359C1.7422 0.348193 3.7692 0.404894 4.0742 1.83969C4.1407 2.15199 4.3119 2.43229 4.5595 2.63369L5.2847 3.22379C5.7571 3.60789 5.6522 4.3563 5.0925 4.5959L4.8036 4.71969C3.5689 5.24839 2.1733 5.25779 0.931597 4.74599L0.5357 4.58289C-0.0439996 4.34399 -0.1778 3.58279 0.2857 3.16029L0.896498 2.60399C1.0983 2.41999 1.2436 2.18229 1.3153 1.91869L1.3575 1.76359Z" fill="${noseColor}"/>
                 `}
-                    <path d="M1.69971 4.9713H3.80831V7.9571C3.80831 8.004 3.77441 8.0439 3.72821 8.0518L2.65811 8.23L1.78591 8.1428C1.73711 8.1378 1.69971 8.0966 1.69971 8.0475V4.9713Z" fill="url(#paint1_linear_17_959)"/>
+                    <path d="M1.69971 4.9713H3.80831V7.9571C3.80831 8.004 3.77441 8.0439 3.72821 8.0518L2.65811 8.23L1.78591 8.1428C1.73711 8.1378 1.69971 8.0966 1.69971 8.0475V4.9713Z" fill="url(#paint1_linear_nose)"/>
                     <g style="mix-blend-mode:multiply">
                         <path d="M3.80831 4.9713H1.69971V5.5463H3.80831V4.9713Z" fill="black" fill-opacity="0.3"/>
                     </g>
-                    ${gradientDefinitions}
+                ${gradientDefinitions}
                     <defs>
                         <linearGradient id="paint0_linear_17_959" x1="2.8698" y1="6.73139" x2="2.8694" y2="-3.81001" gradientUnits="userSpaceOnUse">
                             <stop stop-color="${noseColor}"/>
                             <stop offset="0.492422"/>
                         </linearGradient>
-                        <linearGradient id="paint1_linear_17_959" x1="2.75401" y1="4.9713" x2="2.75401" y2="8.23" gradientUnits="userSpaceOnUse">
+                        <linearGradient id="paint1_linear_nose" x1="2.75401" y1="4.9713" x2="2.75401" y2="8.23" gradientUnits="userSpaceOnUse">
                             <stop stop-color="${noseColor}"/>
                             <stop offset="1" stop-color="${noseColor}"/>
                         </linearGradient>
                     </defs>
                 </svg>
             </div>
-        `)
+        `);
 
     
         // Combine SVG elements
