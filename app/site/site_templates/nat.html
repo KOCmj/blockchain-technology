@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<script type="module" src="{{ url_for('static', filename='NAT.js')}}" defer></script>
+<script type="module" src="{{ url_for('static', filename='NAT.js')}}" mint="MINT_INSCRIPTION_ID" defer></script>
 <script src="{{ url_for('static', filename='forms.js') }}" defer></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')}}">
 
@@ -42,8 +42,10 @@
   </main>
 
 
-  <div class="mt-16">
+  <div id="CTviewer" class="mt-16">
+    <input class="bg-white" id="blk" type="number" style="display: none;"/>
     <div id="card-container" style="width: 400px; height: 550px; border: 1px solid #000000; border-radius: 20px; position: relative;">
+      <div id="preview" mint="YOUR_MINT_INSCRIPTION_ID"></div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 550" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
             <rect x="0" y="0" width="400" height="550" fill="url(#card-gradient)" rx="20"/>
             <text x="50%" y="15%" text-anchor="middle" font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" font-size="36px" font-weight="bold" fill="#000" text-shadow="2px 2px 4px rgba(0, 0, 0, 0.5)">Coding Temple</text>
@@ -81,10 +83,7 @@
       </svg>
       
   </div>
-  
-  <div>
-      <button id="mint-card-button" class="bg-slate-300 hover:bg-gradient-to-r from-[#FDFF9B] via-[#50FBD9] to-[#106857] text-slate-700 hover:text-black border rounded-lg px-4 py-8" style="z-index: 9999;">Mint New Card</button>
-  </div>
+
 </section>
 
 

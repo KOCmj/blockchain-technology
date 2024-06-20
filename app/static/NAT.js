@@ -1,5 +1,162 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let blockNumber = 0;
+    const root = document.getElementById('CTviewer')
+    root.parentElement.style.width = '100%'
+    root.parentElement.style.height = '100%'
+    root.parentElement.style.padding = '0px'
+    root.parentElement.style.margin = '0px'
+
+    let blockNumber = '0'
+
+    // Retrieve content inscription id
+    let mintText = document.getElementById('preview').getAttribute('mint')
+
+    // Check no mint provided
+    if (mintText.includes('MINT_INSCRIPTION_ID')) {
+        let input = document.getElementById('blk')
+        input.style.display = 'block';
+        input.style.position = 'absolute';
+        input.style.fontSize = '20px';
+        input.style.marginTop = '20px';
+        input.style.marginLeft = '13px'; 
+        input.style.zIndex = '1000';
+
+        input.value = blockNumber
+        input.addEventListener('input', () => {
+            blockNumber = parseInt(input.value);
+            const blockNumberStr = blockNumber.toString();
+        
+            const selectedSVG = displayLegendarySVG(blockNumberStr) || displayCC(blockNumberStr);
+            const svgContent = generateSVGContent(blockNumber);
+            const generatedSVGContainer = document.getElementById('generated-svg-container');
+            const svgImageElement = document.getElementById('svg-image');
+        
+            if (selectedSVG) {
+                svgImageElement.src = selectedSVG;
+                svgImageElement.style.visibility = 'visible';
+                svgImageElement.style.zIndex = '1';
+                generatedSVGContainer.style.visibility = 'hidden';
+            } else {
+                svgImageElement.src = 'static/svg/NAT.svg';
+                svgImageElement.style.visibility = 'hidden';
+                generatedSVGContainer.style.visibility = 'visible';
+                generatedSVGContainer.style.zIndex = '1';
+            }
+        
+            generatedSVGContainer.innerHTML = svgContent;
+        
+            updateCardID(blockNumber);
+            updateCardBackground(selectedSVG);
+        
+            const binarySequenceBackground = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            const cardContainer = document.getElementById('card-container');
+            const existingBinarySequenceBackground = document.getElementById('binary-sequence-background');
+        
+            if (existingBinarySequenceBackground && existingBinarySequenceBackground.parentNode === cardContainer) {
+                cardContainer.removeChild(existingBinarySequenceBackground);
+            }
+        
+            binarySequenceBackground.setAttribute('id', 'binary-sequence-background');
+            binarySequenceBackground.setAttribute('viewBox', '0 0 400 550');
+            binarySequenceBackground.setAttribute('style', 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;');
+        
+            const binarySequencePattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+            binarySequencePattern.setAttribute('id', 'binary-sequence-pattern');
+            binarySequencePattern.setAttribute('x', '0');
+            binarySequencePattern.setAttribute('y', '0');
+            binarySequencePattern.setAttribute('width', '400');
+            binarySequencePattern.setAttribute('height', '550');
+            binarySequencePattern.setAttribute('patternUnits', 'userSpaceOnUse');
+        
+            const binarySequenceRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            binarySequenceRect.setAttribute('x', '0');
+            binarySequenceRect.setAttribute('y', '0');
+            binarySequenceRect.setAttribute('width', '400');
+            binarySequenceRect.setAttribute('height', '550');
+            binarySequenceRect.setAttribute('fill', 'transparent');
+        
+            const binarySequenceDefs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            binarySequenceDefs.appendChild(binarySequencePattern);
+            binarySequencePattern.appendChild(binarySequenceRect);
+        
+            const binarySequenceBackgroundRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            binarySequenceBackgroundRect.setAttribute('x', '0');
+            binarySequenceBackgroundRect.setAttribute('y', '0');
+            binarySequenceBackgroundRect.setAttribute('width', '400');
+            binarySequenceBackgroundRect.setAttribute('height', '550');
+            binarySequenceBackgroundRect.setAttribute('fill', 'url(#binary-sequence-pattern)');
+        
+            binarySequenceBackground.appendChild(binarySequenceDefs);
+            binarySequenceBackground.appendChild(binarySequenceBackgroundRect);
+        
+            if (blockNumber % 2 === 0 || blockNumberStr.includes('5')) {
+                generateBinarySequence(binarySequenceBackground, blockNumberStr);
+                animateBinarySequence(binarySequenceBackground, blockNumberStr, colorMap3, colorMap4);
+                cardContainer.appendChild(binarySequenceBackground);
+            } 
+            
+        });
+        update()
+    }
+    // Mint was provided
+    else {
+        const request = new XMLHttpRequest()
+        try {
+            request.open('GET', '/content/' + mintText)
+            request.responseType = 'text'
+            request.addEventListener('load', () => initialize(request.response))
+            request.addEventListener('error', () => console.error('XHR error'))
+            request.send()
+        } catch (error) {
+            console.error(`XHR error ${request.status}`)
+        }
+    }
+
+    function updateSVGAndTraits() {
+        const blockNumberStr = blockNumber.toString();
+        const selectedSVG = displayLegendarySVG(blockNumberStr) || displayCC(blockNumberStr);
+        const svgContent = generateSVGContent(blockNumber);
+        const generatedSVGContainer = document.getElementById('generated-svg-container');
+        const svgImageElement = document.getElementById('svg-image');
+    
+        if (selectedSVG) {
+            svgImageElement.src = selectedSVG;
+            svgImageElement.style.visibility = 'visible';
+            svgImageElement.style.zIndex = '1';
+            generatedSVGContainer.style.visibility = 'hidden';
+        } else {
+            svgImageElement.style.visibility = 'hidden';
+            generatedSVGContainer.style.visibility = 'visible';
+            generatedSVGContainer.style.zIndex = '1';
+        }
+    
+        generatedSVGContainer.innerHTML = svgContent;
+    
+        updateCardID(blockNumber);
+        updateCardBackground(selectedSVG);
+    
+        fetchBlockData()
+            .then(([blockHeight, txCount]) => {
+                displayTraits(blockHeight, txCount);
+            })
+            .catch(error => console.error('Error fetching Bitcoin block data:', error));
+    }
+
+    function initialize(result) {
+        if (result) {
+            console.log('Result', result)
+            data = JSON.parse(result)
+            blockNumber = data.blk
+        }
+        updateSVGAndTraits();
+
+        // update()
+    }
+
+    function update() {
+        // generateSVGContent(blockNumber)
+        updateSVGAndTraits();
+
+    }
 
 
     // Function to fetch block height and transaction count
@@ -11,14 +168,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Function to generate card ID
-    function generateCardID() {
-        const maxCards = 20000;
-        const cardID = (blockNumber % maxCards) + 1;
+    function generateCardID(blockNumber) {
+        console.log("Block Number:", blockNumber);
+        // const maxCards = 20000;
+        const cardID = blockNumber + 1;
         return cardID.toString().padStart(5, '0');
     }
 
     // Function to genrate SVG body parts/content
-    function generateSVGContent() {
+    function generateSVGContent(blockNumber) {
         const blockNumberStr = blockNumber.toString();
         console.log("Block number length:", blockNumberStr.length);
 
@@ -795,7 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Function to update the ID number and traits in the DOM
-    function updateCardID() {
+    function updateCardID(blockNumber) {
         fetchBlockData()
             .then(([blockHeight, txCount]) => {
                 const idNumberElement = document.getElementById('id-number');
@@ -835,7 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     
-        return 0; // Default value if no prime digit is found
+        return 0;
     }
 
     // Function to display traits based on block height and transaction count/blockNumbers
@@ -849,7 +1007,6 @@ document.addEventListener('DOMContentLoaded', () => {
         traitsContainer.style.transform = 'translateX(-50%)';
 
         const combinedValue = blockHeight + txCount;
-        // const bookOccurrence = combinedValue % 10 < 1;
 
         let graduationCapDisplayed = false;
         let vrGogglesDisplayed = false;
@@ -931,8 +1088,8 @@ document.addEventListener('DOMContentLoaded', () => {
             graduationCapDisplayed = true;
         }
 
-        // BTC laptop 1% chance of generating
-        if (combinedValue % 1000 === 0){
+        // BTC laptop multiples of 1000
+        if (blockNumber % 1000 === 0){
             const btcLaptop = 'static/svg/traits/laptop.svg';
             const btcLaptopElement = document.createElement('img');
             btcLaptopElement.src = btcLaptop;
@@ -945,6 +1102,45 @@ document.addEventListener('DOMContentLoaded', () => {
             btcLaptopElement.style.height = 'auto';
             traitsContainer.appendChild(btcLaptopElement);
             btcLaptopDisplayed = true;
+        }
+
+        //UE sticker
+        if (blockNumberStr.length >= 3) {
+            const UEContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            UEContainer.setAttribute('width', '22');
+            UEContainer.setAttribute('height', '19');
+            UEContainer.setAttribute('viewBox', '0 0 22 19');
+            UEContainer.setAttribute('fill', 'none');
+            UEContainer.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            UEContainer.style.position = 'absolute';
+            UEContainer.style.top = '37.8%';
+            UEContainer.style.right = '40.4%';
+            UEContainer.style.transform = 'translateX(-50%)';
+    
+            const traitsColorDigit = blockNumberDigits[5];
+            const traitsColor = traitsColorMap[traitsColorDigit] || traitsColorMap["default"];
+            UEContainer.style.filter = `${traitsColor} saturate(1)`;
+
+            const svgContent = `
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.7597 2.44775L1.60101 2.92774L2.01097 10.7504L11.1696 10.2704L10.7597 2.44775Z" fill="#D9D9D9"/>
+                    <path d="M6.19005 2.87365C8.59726 2.7475 10.6394 4.31815 10.747 6.37047C10.8545 8.42277 8.98339 10.1985 6.58053 10.3245C4.17767 10.4504 2.13136 8.88371 2.02361 6.82765C1.91586 4.77161 3.78719 2.99958 6.19005 2.87365ZM6.18031 2.68775C3.65121 2.8203 1.69273 4.67891 1.80594 6.83905C1.91914 8.99916 4.06117 10.6429 6.59027 10.5104C9.11937 10.3778 11.0779 8.51917 10.9646 6.35907C10.8514 4.19892 8.71375 2.55498 6.18031 2.68775Z" fill="#2A95EB"/>
+                    <path d="M5.74391 4.13681C5.74391 4.13681 4.62254 4.46059 3.64898 5.40554C2.67542 6.3505 2.57934 6.99233 2.60414 7.46567C2.81276 7.13834 4.11074 5.32596 4.47982 6.13728L4.58359 8.11739C4.58359 8.11739 4.57849 8.38664 4.07475 8.30622C4.23527 8.52728 5.03126 9.05112 6.42159 9.093C6.72408 8.81608 7.11635 8.41979 7.11635 8.41979L7.83138 8.86487C7.83138 8.86487 9.03727 8.13714 9.47544 7.14906C9.03323 7.41747 8.5121 8.01434 8.20379 7.63102L8.07748 5.22091C8.07748 5.22091 8.76746 4.27106 8.88013 4.22164C8.59016 4.28035 7.57502 4.61438 7.06392 5.21865C6.90335 5.08863 6.47689 5.10702 6.47689 5.10702C6.47689 5.10702 6.82416 5.31823 6.83993 5.52704C6.85562 5.73587 6.94226 7.47963 6.9528 7.68075C6.73297 7.88609 6.49403 8.00144 6.33597 8.00972C5.9671 8.02905 5.8562 7.92812 5.75002 7.82686L5.61731 5.29446C5.61731 5.29446 5.44189 5.43023 5.28743 5.23265C5.13296 5.03506 5.10727 4.63692 5.74391 4.13681Z" fill="#2A95EB"/>
+                    <path d="M12.2116 0.945496L-3.84449e-10 1.58548L0.559044 12.2527L12.7706 11.6127L12.2116 0.945496Z" fill="#A4A4A4" fill-opacity="0.5"/>
+                    <path d="M0.926046 2.70395C0.962598 2.28127 1.2044 1.9473 1.70363 1.9195" stroke="black" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10.7451 1.92119C11.1548 2.03141 11.4411 2.32811 11.3808 2.82446" stroke="black" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M0.975525 10.7809C1.00211 11.2043 1.09484 11.5527 1.59327 11.5923" stroke="black" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2.73523 2.08994C4.07514 2.02957 5.41504 1.9692 6.75495 1.90883" stroke="black" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9.60895 11.3835C7.98229 11.4501 6.35562 11.5168 4.72896 11.5834" stroke="black" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M11.4951 9.78088C11.4685 10.2043 11.3758 10.5527 10.8774 10.5923" stroke="black" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M11.3982 3.76022C11.437 5.05684 11.4758 6.35347 11.5145 7.65009" stroke="black" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            `;
+
+
+            UEContainer.innerHTML = svgContent;
+            traitsContainer.appendChild(UEContainer);
+
         }
 
         // Vr Goggles
@@ -1270,6 +1466,345 @@ document.addEventListener('DOMContentLoaded', () => {
             traitsContainer.appendChild(tieElement);
         }
 
+        // galaxy background
+        //testing
+        if (blockNumberStr.includes('3')) {
+            const ccBackgroundSVG = `
+                <div class="cc-background" style="position: absolute; top: 0; left: 7px; width: 100%; height: 100%;">
+                <svg width="380" height="529" viewBox="0 0 380 529" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_114_2)">
+                <path d="M302.5 483C303.881 483 305 481.881 305 480.5C305 479.119 303.881 478 302.5 478C301.119 478 300 479.119 300 480.5C300 481.881 301.119 483 302.5 483Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip1_114_2)">
+                <path d="M7.5 260C8.88071 260 10 258.881 10 257.5C10 256.119 8.88071 255 7.5 255C6.11929 255 5 256.119 5 257.5C5 258.881 6.11929 260 7.5 260Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip2_114_2)">
+                <path d="M347.5 39C348.881 39 350 37.8807 350 36.5C350 35.1193 348.881 34 347.5 34C346.119 34 345 35.1193 345 36.5C345 37.8807 346.119 39 347.5 39Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip3_114_2)">
+                <path d="M266.5 25C267.881 25 269 23.8807 269 22.5C269 21.1193 267.881 20 266.5 20C265.119 20 264 21.1193 264 22.5C264 23.8807 265.119 25 266.5 25Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip4_114_2)">
+                <path d="M178.5 25C179.881 25 181 23.8807 181 22.5C181 21.1193 179.881 20 178.5 20C177.119 20 176 21.1193 176 22.5C176 23.8807 177.119 25 178.5 25Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip5_114_2)">
+                <path d="M29.5 495C30.8807 495 32 493.881 32 492.5C32 491.119 30.8807 490 29.5 490C28.1193 490 27 491.119 27 492.5C27 493.881 28.1193 495 29.5 495Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip6_114_2)">
+                <path d="M2.5 367C3.88071 367 5 365.881 5 364.5C5 363.119 3.88071 362 2.5 362C1.11929 362 0 363.119 0 364.5C0 365.881 1.11929 367 2.5 367Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip7_114_2)">
+                <mask id="mask0_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="84" y="23" width="3" height="3">
+                <path d="M87 23H84V26H87V23Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask0_114_2)">
+                <mask id="mask1_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="84" y="23" width="3" height="3">
+                <path d="M87 23H84V26H87V23Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask1_114_2)">
+                <g opacity="0.7">
+                <path d="M86.7502 24.6149L85.7136 24.7262L85.4235 24.7259L85.0731 24.7255L84.0002 24.6123L85.0733 24.501L85.5003 24.5014L85.7139 24.5017L86.7502 24.6149Z" fill="#D9D9D9"/>
+                <path d="M85.5 23L85.6123 24.0365V24.3266V24.677L85.5 25.75L85.3878 24.677V24.25V24.0365L85.5 23Z" fill="#D9D9D9"/>
+                <path d="M85.5 25C85.7761 25 86 24.7761 86 24.5C86 24.2239 85.7761 24 85.5 24C85.2239 24 85 24.2239 85 24.5C85 24.7761 85.2239 25 85.5 25Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip8_114_2)">
+                <mask id="mask2_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="210" y="20" width="20" height="23">
+                <path d="M230 20H210V43H230V20Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask2_114_2)">
+                <mask id="mask3_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="210" y="20" width="20" height="23">
+                <path d="M230 20H210V43H230V20Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask3_114_2)">
+                <g opacity="0.7">
+                <path d="M228.335 32.3811L221.424 33.234L219.49 33.2318L217.154 33.2292L210.001 32.3607L217.155 31.508L220.002 31.5111L221.426 31.5127L228.335 32.3811Z" fill="#D9D9D9"/>
+                <path d="M220 20L220.748 27.9463V30.1706V32.8574L220 41.0833L219.252 32.8574V29.5833V27.9463L220 20Z" fill="#D9D9D9"/>
+                <path d="M220 35.3333C221.841 35.3333 223.333 33.6171 223.333 31.5C223.333 29.3829 221.841 27.6667 220 27.6667C218.159 27.6667 216.667 29.3829 216.667 31.5C216.667 33.6171 218.159 35.3333 220 35.3333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip9_114_2)">
+                <mask id="mask4_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="99" y="506" width="20" height="23">
+                <path d="M119 506H99V529H119V506Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask4_114_2)">
+                <mask id="mask5_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="99" y="506" width="20" height="23">
+                <path d="M119 506H99V529H119V506Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask5_114_2)">
+                <mask id="mask6_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="99" y="506" width="20" height="23">
+                <path d="M119 506H99V529H119V506Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask6_114_2)">
+                <g opacity="0.7">
+                <path d="M117.335 518.381L110.424 519.234L108.49 519.232L106.154 519.229L99.0014 518.361L106.155 517.508L109.002 517.511L110.426 517.513L117.335 518.381Z" fill="#D9D9D9"/>
+                <path d="M109 506L109.749 513.946V516.171V518.857L109 527.083L108.252 518.857V515.583V513.946L109 506Z" fill="#D9D9D9"/>
+                <path d="M109 521.333C110.841 521.333 112.333 519.617 112.333 517.5C112.333 515.383 110.841 513.667 109 513.667C107.159 513.667 105.667 515.383 105.667 517.5C105.667 519.617 107.159 521.333 109 521.333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip10_114_2)">
+                <mask id="mask7_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="360" y="73" width="20" height="23">
+                <path d="M380 73H360V96H380V73Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask7_114_2)">
+                <mask id="mask8_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="360" y="73" width="20" height="23">
+                <path d="M380 73H360V96H380V73Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask8_114_2)">
+                <mask id="mask9_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="360" y="73" width="20" height="23">
+                <path d="M380 73H360V96H380V73Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask9_114_2)">
+                <g opacity="0.7">
+                <path d="M378.335 85.3811L371.424 86.234L369.49 86.2318L367.154 86.2292L360.001 85.3607L367.155 84.508L370.002 84.5111L371.426 84.5127L378.335 85.3811Z" fill="#D9D9D9"/>
+                <path d="M370 73L370.749 80.9463V83.1706V85.8574L370 94.0833L369.252 85.8574V82.5833V80.9463L370 73Z" fill="#D9D9D9"/>
+                <path d="M370 88.3333C371.841 88.3333 373.333 86.6171 373.333 84.5C373.333 82.3829 371.841 80.6667 370 80.6667C368.159 80.6667 366.667 82.3829 366.667 84.5C366.667 86.6171 368.159 88.3333 370 88.3333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip11_114_2)">
+                <mask id="mask10_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="360" y="0" width="20" height="23">
+                <path d="M380 0H360V23H380V0Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask10_114_2)">
+                <mask id="mask11_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="360" y="0" width="20" height="23">
+                <path d="M380 0H360V23H380V0Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask11_114_2)">
+                <mask id="mask12_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="360" y="0" width="20" height="23">
+                <path d="M380 0H360V23H380V0Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask12_114_2)">
+                <g opacity="0.9">
+                <path d="M378.335 12.3811L371.424 13.234L369.49 13.2318L367.154 13.2292L360.001 12.3607L367.155 11.508L370.002 11.5111L371.426 11.5127L378.335 12.3811Z" fill="#D9D9D9"/>
+                <path d="M370 0L370.749 7.94627V10.1706V12.8574L370 21.0833L369.252 12.8574V9.58333V7.94627L370 0Z" fill="#D9D9D9"/>
+                <path d="M370 15.3333C371.841 15.3333 373.333 13.6171 373.333 11.5C373.333 9.38293 371.841 7.66667 370 7.66667C368.159 7.66667 366.667 9.38293 366.667 11.5C366.667 13.6171 368.159 15.3333 370 15.3333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip12_114_2)">
+                <path d="M26.5 143C27.8807 143 29 141.881 29 140.5C29 139.119 27.8807 138 26.5 138C25.1193 138 24 139.119 24 140.5C24 141.881 25.1193 143 26.5 143Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip13_114_2)">
+                <path d="M18.5 48C19.8807 48 21 46.8807 21 45.5C21 44.1193 19.8807 43 18.5 43C17.1193 43 16 44.1193 16 45.5C16 46.8807 17.1193 48 18.5 48Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip14_114_2)">
+                <path d="M304.5 336C305.881 336 307 334.881 307 333.5C307 332.119 305.881 331 304.5 331C303.119 331 302 332.119 302 333.5C302 334.881 303.119 336 304.5 336Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip15_114_2)">
+                <path d="M339.5 266C340.881 266 342 264.881 342 263.5C342 262.119 340.881 261 339.5 261C338.119 261 337 262.119 337 263.5C337 264.881 338.119 266 339.5 266Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip16_114_2)">
+                <path d="M52.5 221C53.8807 221 55 219.881 55 218.5C55 217.119 53.8807 216 52.5 216C51.1193 216 50 217.119 50 218.5C50 219.881 51.1193 221 52.5 221Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip17_114_2)">
+                <path d="M211.5 312C212.881 312 214 310.881 214 309.5C214 308.119 212.881 307 211.5 307C210.119 307 209 308.119 209 309.5C209 310.881 210.119 312 211.5 312Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip18_114_2)">
+                <path d="M283.5 233C284.881 233 286 231.881 286 230.5C286 229.119 284.881 228 283.5 228C282.119 228 281 229.119 281 230.5C281 231.881 282.119 233 283.5 233Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip19_114_2)">
+                <path d="M345.5 349C346.881 349 348 347.881 348 346.5C348 345.119 346.881 344 345.5 344C344.119 344 343 345.119 343 346.5C343 347.881 344.119 349 345.5 349Z" fill="#D9D9D9"/>
+                </g>
+                <g clip-path="url(#clip20_114_2)">
+                <mask id="mask13_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="77" y="120" width="3" height="3">
+                <path d="M80 120H77V123H80V120Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask13_114_2)">
+                <mask id="mask14_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="77" y="120" width="3" height="3">
+                <path d="M80 120H77V123H80V120Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask14_114_2)">
+                <g opacity="0.7">
+                <path d="M79.7502 121.615L78.7136 121.726L78.4235 121.726L78.0731 121.726L77.0002 121.612L78.0733 121.501L78.5003 121.501L78.7139 121.502L79.7502 121.615Z" fill="#D9D9D9"/>
+                <path d="M78.5 120L78.6123 121.036V121.327V121.677L78.5 122.75L78.3878 121.677V121.25V121.036L78.5 120Z" fill="#D9D9D9"/>
+                <path d="M78.5 122C78.7761 122 79 121.776 79 121.5C79 121.224 78.7761 121 78.5 121C78.2239 121 78 121.224 78 121.5C78 121.776 78.2239 122 78.5 122Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip21_114_2)">
+                <mask id="mask15_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="91" y="281" width="20" height="23">
+                <path d="M111 281H91V304H111V281Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask15_114_2)">
+                <mask id="mask16_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="91" y="281" width="20" height="23">
+                <path d="M111 281H91V304H111V281Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask16_114_2)">
+                <mask id="mask17_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="91" y="281" width="20" height="23">
+                <path d="M111 281H91V304H111V281Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask17_114_2)">
+                <g opacity="0.7">
+                <path d="M109.335 293.381L102.424 294.234L100.49 294.232L98.1537 294.229L91.0014 293.361L98.1551 292.508L101.002 292.511L102.426 292.513L109.335 293.381Z" fill="#D9D9D9"/>
+                <path d="M101 281L101.749 288.946V291.171V293.857L101 302.083L100.252 293.857V290.583V288.946L101 281Z" fill="#D9D9D9"/>
+                <path d="M101 296.333C102.841 296.333 104.333 294.617 104.333 292.5C104.333 290.383 102.841 288.667 101 288.667C99.1591 288.667 97.6667 290.383 97.6667 292.5C97.6667 294.617 99.1591 296.333 101 296.333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip22_114_2)">
+                <mask id="mask18_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="256" y="139" width="20" height="23">
+                <path d="M276 139H256V162H276V139Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask18_114_2)">
+                <mask id="mask19_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="256" y="139" width="20" height="23">
+                <path d="M276 139H256V162H276V139Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask19_114_2)">
+                <mask id="mask20_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="256" y="139" width="20" height="23">
+                <path d="M276 139H256V162H276V139Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask20_114_2)">
+                <g opacity="0.7">
+                <path d="M274.335 151.381L267.424 152.234L265.49 152.232L263.154 152.229L256.001 151.361L263.155 150.508L266.002 150.511L267.426 150.513L274.335 151.381Z" fill="#D9D9D9"/>
+                <path d="M266 139L266.749 146.946V149.171V151.857L266 160.083L265.252 151.857V148.583V146.946L266 139Z" fill="#D9D9D9"/>
+                <path d="M266 154.333C267.841 154.333 269.333 152.617 269.333 150.5C269.333 148.383 267.841 146.667 266 146.667C264.159 146.667 262.667 148.383 262.667 150.5C262.667 152.617 264.159 154.333 266 154.333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip23_114_2)">
+                <mask id="mask21_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="64" y="14" width="20" height="23">
+                <path d="M84 14H64V37H84V14Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask21_114_2)">
+                <mask id="mask22_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="64" y="14" width="20" height="23">
+                <path d="M84 14H64V37H84V14Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask22_114_2)">
+                <mask id="mask23_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="64" y="14" width="20" height="23">
+                <path d="M84 14H64V37H84V14Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask23_114_2)">
+                <g opacity="0.7">
+                <path d="M82.3347 26.3811L75.4242 27.234L73.4901 27.2318L71.1537 27.2292L64.0014 26.3607L71.1551 25.508L74.0021 25.5111L75.4257 25.5127L82.3347 26.3811Z" fill="#D9D9D9"/>
+                <path d="M74.0001 14L74.7485 21.9463V24.1706V26.8574L74.0001 35.0833L73.2517 26.8574V23.5833V21.9463L74.0001 14Z" fill="#D9D9D9"/>
+                <path d="M74 29.3333C75.8409 29.3333 77.3333 27.6171 77.3333 25.5C77.3333 23.3829 75.8409 21.6667 74 21.6667C72.1591 21.6667 70.6667 23.3829 70.6667 25.5C70.6667 27.6171 72.1591 29.3333 74 29.3333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                </g>
+                <g clip-path="url(#clip24_114_2)">
+                <mask id="mask24_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="251" y="354" width="20" height="23">
+                <path d="M271 354H251V377H271V354Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask24_114_2)">
+                <mask id="mask25_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="251" y="354" width="20" height="23">
+                <path d="M271 354H251V377H271V354Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask25_114_2)">
+                <mask id="mask26_114_2" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="251" y="354" width="20" height="23">
+                <path d="M271 354H251V377H271V354Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask26_114_2)">
+                <g opacity="0.7">
+                <path d="M269.335 366.381L262.424 367.234L260.49 367.232L258.154 367.229L251.001 366.361L258.155 365.508L261.002 365.511L262.426 365.513L269.335 366.381Z" fill="#D9D9D9"/>
+                <path d="M261 354L261.749 361.946V364.171V366.857L261 375.083L260.252 366.857V363.583V361.946L261 354Z" fill="#D9D9D9"/>
+                <path d="M261 369.333C262.841 369.333 264.333 367.617 264.333 365.5C264.333 363.383 262.841 361.667 261 361.667C259.159 361.667 257.667 363.383 257.667 365.5C257.667 367.617 259.159 369.333 261 369.333Z" fill="#D9D9D9"/>
+                </g>
+                </g>
+                </g>
+                </g>
+                </g>
+                <defs>
+                <clipPath id="clip0_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(300 478)"/>
+                </clipPath>
+                <clipPath id="clip1_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(5 255)"/>
+                </clipPath>
+                <clipPath id="clip2_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(345 34)"/>
+                </clipPath>
+                <clipPath id="clip3_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(264 20)"/>
+                </clipPath>
+                <clipPath id="clip4_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(176 20)"/>
+                </clipPath>
+                <clipPath id="clip5_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(27 490)"/>
+                </clipPath>
+                <clipPath id="clip6_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(0 362)"/>
+                </clipPath>
+                <clipPath id="clip7_114_2">
+                <rect width="3" height="3" fill="white" transform="translate(84 23)"/>
+                </clipPath>
+                <clipPath id="clip8_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(210 20)"/>
+                </clipPath>
+                <clipPath id="clip9_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(99 506)"/>
+                </clipPath>
+                <clipPath id="clip10_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(360 73)"/>
+                </clipPath>
+                <clipPath id="clip11_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(360)"/>
+                </clipPath>
+                <clipPath id="clip12_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(24 138)"/>
+                </clipPath>
+                <clipPath id="clip13_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(16 43)"/>
+                </clipPath>
+                <clipPath id="clip14_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(302 331)"/>
+                </clipPath>
+                <clipPath id="clip15_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(337 261)"/>
+                </clipPath>
+                <clipPath id="clip16_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(50 216)"/>
+                </clipPath>
+                <clipPath id="clip17_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(209 307)"/>
+                </clipPath>
+                <clipPath id="clip18_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(281 228)"/>
+                </clipPath>
+                <clipPath id="clip19_114_2">
+                <rect width="5" height="5" fill="white" transform="translate(343 344)"/>
+                </clipPath>
+                <clipPath id="clip20_114_2">
+                <rect width="3" height="3" fill="white" transform="translate(77 120)"/>
+                </clipPath>
+                <clipPath id="clip21_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(91 281)"/>
+                </clipPath>
+                <clipPath id="clip22_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(256 139)"/>
+                </clipPath>
+                <clipPath id="clip23_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(64 14)"/>
+                </clipPath>
+                <clipPath id="clip24_114_2">
+                <rect width="20" height="23" fill="white" transform="translate(251 354)"/>
+                </clipPath>
+                </defs>
+                </svg>                
+            </div>
+            `;
+            traitsContainer.innerHTML += ccBackgroundSVG;
+        }
+
     // More...
     }
 
@@ -1422,8 +1957,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Binary sequence generated.');
       }
 
-
-    
+      
     const colorMap3 = {
         0: "#A3D2D5", // Mint
         1: "#7FCDB8", // Teal
@@ -1488,116 +2022,4 @@ document.addEventListener('DOMContentLoaded', () => {
       
         console.log('Binary sequence animation started.');
       }
-
-      // Function to mint a new card
-      async function mintNewCard() {
-        try {
-          blockNumber = (blockNumber + 1) % 1000;
-          const [blockHeight, txCount] = await fetchBlockData();
-          console.log('Minting new card...');
-          console.log('Block height:', blockHeight);
-          console.log('Transaction count:', txCount);
-      
-          const blockNumberStr = blockNumber.toString();
-          const binarySequenceBackground = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          const generatedSVGContainer = document.getElementById('generated-svg-container');
-          const svgImageElement = document.getElementById('svg-image');
-      
-          const selectedSVG = displayLegendarySVG(blockNumberStr) || displayCC(blockNumberStr);
-          const svgContent = generateSVGContent();
-      
-          if (selectedSVG) {
-            svgImageElement.src = selectedSVG;
-            svgImageElement.style.visibility = 'visible';
-            svgImageElement.style.zIndex = '1';
-            generatedSVGContainer.style.visibility = 'hidden';
-          } else {
-            svgImageElement.src = 'static/svg/NAT.svg';
-            svgImageElement.style.visibility = 'hidden';
-            generatedSVGContainer.style.visibility = 'visible';
-            generatedSVGContainer.style.zIndex = '1';
-          }
-      
-          generatedSVGContainer.innerHTML = svgContent;
-      
-          const newSVGContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-          newSVGContainer.setAttribute('viewBox', '0 0 400 550');
-          newSVGContainer.innerHTML = svgContent;
-      
-          const traitsContainer = document.getElementById('traits-container');
-          traitsContainer.appendChild(newSVGContainer);
-      
-          // Use requestAnimationFrame to modify the style after the element has been rendered
-          requestAnimationFrame(() => {
-            newSVGContainer.style.position = 'absolute';
-            newSVGContainer.style.top = '0';
-            newSVGContainer.style.left = '0';
-            newSVGContainer.style.width = '100%';
-            newSVGContainer.style.height = '100%';
-          });
-      
-          updateCardID();
-      
-          const cardContainer = document.getElementById('card-container');
-      
-          // Remove existing binary sequence background
-          const existingBinarySequenceBackground = document.getElementById('binary-sequence-background');
-          if (existingBinarySequenceBackground && existingBinarySequenceBackground.parentNode === cardContainer) {
-            cardContainer.removeChild(existingBinarySequenceBackground);
-          }
-      
-          binarySequenceBackground.setAttribute('id', 'binary-sequence-background');
-          binarySequenceBackground.setAttribute('viewBox', '0 0 400 550');
-          binarySequenceBackground.setAttribute('style', 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2;');
-      
-          const binarySequencePattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
-          binarySequencePattern.setAttribute('id', 'binary-sequence-pattern');
-          binarySequencePattern.setAttribute('x', '0');
-          binarySequencePattern.setAttribute('y', '0');
-          binarySequencePattern.setAttribute('width', '400');
-          binarySequencePattern.setAttribute('height', '550');
-          binarySequencePattern.setAttribute('patternUnits', 'userSpaceOnUse');
-      
-          const binarySequenceRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          binarySequenceRect.setAttribute('x', '0');
-          binarySequenceRect.setAttribute('y', '0');
-          binarySequenceRect.setAttribute('width', '400');
-          binarySequenceRect.setAttribute('height', '550');
-          binarySequenceRect.setAttribute('fill', 'transparent');
-      
-          const binarySequenceDefs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-          binarySequenceDefs.appendChild(binarySequencePattern);
-          binarySequencePattern.appendChild(binarySequenceRect);
-      
-          const binarySequenceBackgroundRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-          binarySequenceBackgroundRect.setAttribute('x', '0');
-          binarySequenceBackgroundRect.setAttribute('y', '0');
-          binarySequenceBackgroundRect.setAttribute('width', '400');
-          binarySequenceBackgroundRect.setAttribute('height', '550');
-          binarySequenceBackgroundRect.setAttribute('fill', 'url(#binary-sequence-pattern)');
-      
-          binarySequenceBackground.appendChild(binarySequenceDefs);
-          binarySequenceBackground.appendChild(binarySequenceBackgroundRect);
-      
-          cardContainer.appendChild(binarySequenceBackground);
-      
-          // Check for specific block numbers to animate the binary sequence
-          if (blockNumber % 2 === 0 || blockNumberStr.includes('5')) {
-            generateBinarySequence(binarySequenceBackground, blockNumberStr);
-            animateBinarySequence(binarySequenceBackground, blockNumberStr, colorMap3, colorMap4);
-          }
-      
-          updateCardBackground(selectedSVG);
-      
-          console.log('New card minted.');
-        } catch (error) {
-          console.error('Error minting new card:', error);
-        }
-      }
-
-    // Attach event listener for minting new card
-    const mintCardButton = document.getElementById('mint-card-button');
-    if (mintCardButton) {
-        mintCardButton.addEventListener('click', mintNewCard);
-    }
-}); 
+})
