@@ -1,6 +1,10 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 import random
 from forms import UserLoginForm
+from flask_login import login_required, current_user
+from models import User
+from forms import UserLoginForm, UserUpdateForm
+from flask import get_flashed_messages
 
 
 
@@ -24,14 +28,22 @@ def home():
     random.shuffle(image_filenames)
     
     images = image_filenames[:70]
+
+    flash_messages = []
+    categories = ['error', 'User-created', 'success']
+    for category in categories:
+        messages = get_flashed_messages(category_filter=[category])
+        if messages:
+            flash_messages.extend(messages)
+
     
 
-    return render_template('index.html', images=images, form=form)
+    return render_template('index.html', images=images, form=form, flash_messages=flash_messages)
 
 @site.route('/redesign')
 def redesign():
     form = UserLoginForm()
-
+    
     return render_template('redesign.html', form=form)
 
 @site.route('/nat')
@@ -51,3 +63,23 @@ def expand():
     form = UserLoginForm()
 
     return render_template('expansion.html', form=form)
+
+@site.route('/update_profile', methods=['GET', 'POST'])
+@login_required
+def update_profile():
+    form = UserUpdateForm(obj=current_user, is_update=True)
+   
+    if request.method == 'POST' and form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data if form.password.data else None
+        wallet_address = form.wallet_address.data
+
+        updated_user = User.update(current_user.id, email, password, wallet_address)
+        
+        if updated_user:
+            flash('Your profile has been updated successfully!', 'success')
+            return redirect(url_for('site.home'))
+        else:
+            flash('Failed to update your profile. Please try again.', 'error')
+
+    return render_template('update_profile.html', form=form)

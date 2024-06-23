@@ -1,7 +1,7 @@
 from forms import UserLoginForm
 from models import User, supabase
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import check_password_hash
 
 auth = Blueprint('auth', __name__)
@@ -13,6 +13,10 @@ def signup():
         email = form.email.data
         password = form.password.data
         wallet_address = form.wallet_address.data
+
+        if User.email_exists(email):
+            flash('Email address already in use. Please use a different email.', 'error')
+            return redirect(url_for('site.home'))
 
         user = User.create(email, password, wallet_address=wallet_address)
         if user:
@@ -44,6 +48,17 @@ def signin():
         flash('Invalid email or password', 'auth-failed')
 
     return render_template('site.home', form=form)
+
+@auth.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    user_id = current_user.id
+    if User.delete(user_id):
+        logout_user()
+        flash('Your account has been successfully deleted.', 'success')
+    else:
+        flash('Failed to delete your account. Please try again.', 'error')
+    return redirect(url_for('site.home'))
 
 @auth.route('/logout')
 @login_required

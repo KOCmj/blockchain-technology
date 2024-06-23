@@ -250,3 +250,19 @@ ul.benefits-list {
 ul.benefits-list li {
   margin-bottom: 1rem;
 }
+
+.delete-account-btn {
+  background-color: #DC2626;
+  color: #E2E8F0;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-account-btn:hover {
+  background-color: #7F1D1D;
+  color: #000000;
+}

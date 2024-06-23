@@ -16,6 +16,9 @@ def create_user():
     password = request.json.get('password')
     wallet_address = request.json.get('walletAddress')
 
+    if User.email_exists(email):
+        return jsonify({'success': False, 'error': 'Email already exists'}), 400
+
     user = User.create(email, password, wallet_address)
     if user:
         return jsonify({'success': True, 'user_id': user.id})
@@ -26,7 +29,7 @@ def create_user():
 def get_user(user_id):
     user = User.get(user_id)
     if user:
-        return jsonify({'success': True, 'email': user.email})
+        return jsonify({'success': True, 'email': user.email, 'wallet_address': user.wallet_address})
     else:
         return jsonify({'success': False, 'error': 'User not found'}), 404
 
@@ -35,6 +38,11 @@ def update_user(user_id):
     email = request.json.get('email')
     password = request.json.get('password')
     wallet_address = request.json.get('walletAddress') 
+
+    if email and User.email_exists(email):
+        existing_user = User.get_by_email(email)
+        if existing_user and str(existing_user.id) != user_id:
+            return jsonify({'success': False, 'error': 'Email already in use by another account'}), 400
 
     user = User.update(user_id, email, password, wallet_address)
     if user:

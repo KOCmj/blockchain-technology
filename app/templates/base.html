@@ -63,6 +63,9 @@
                     <li>
                         <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="user-menu-item">Logout</a>
                     </li>
+                    <li>
+                        <a href="{{ url_for('site.update_profile') }}" class="block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="user-menu-item">Update Profile</a>
+                    </li>
                     {% else %}
                     <li>
                         <a href="#" class="LO block px-4 py-2 text-sm show-login" role="menuitem" tabindex="-1" id="show-login">Sign In</a>
